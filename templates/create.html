@@ -1,0 +1,103 @@
+{% extends "base.tpl.html" %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Pokémon</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding-bottom: 50px;
+        }
+        .container {
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .form-control {
+            margin-bottom: 15px;
+        }
+        button[type="submit"] {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Pokémon</h1>
+        <form id="pokemon-form">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label>
+                <input type="text" id="name" name="name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="pokedex_number" class="form-label">Pokedex Number:</label>
+                <input type="number" id="pokedex_number" name="pokedex_number" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="classification" class="form-label">Classification:</label>
+                <input type="text" id="classification" name="classification" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="type1" class="form-label">Type 1:</label>
+                <input type="text" id="type1" name="type1" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="type2" class="form-label">Type 2:</label>
+                <input type="text" id="type2" name="type2" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById("pokemon-form").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const pokemonData = {
+            name: formData.get("name"),
+            pokedex_number: parseInt(formData.get("pokedex_number")),
+            classification: formData.get("classification"),
+            type1: formData.get("type1"),
+            type2: formData.get("type2") || null
+        };
+        try {
+            const response = await fetch("/api/create", {
+                method: "POST",
+                body: formData  // Sending form data directly
+            });
+            if (!response.ok) {
+                throw new Error("Failed to create Pokemon");
+            }
+            const pokemon = await response.json();
+            console.log("Created Pokemon:", pokemon);
+            // Optionally, redirect or show success message
+        } catch (error) {
+            console.error("Error creating Pokemon:", error);
+            // Handle error (e.g., show error message)
+        }
+        finally {
+          event.target.reset();
+        }
+    });
+    </script>
+</body>
+</html>
+{% endblock content %}

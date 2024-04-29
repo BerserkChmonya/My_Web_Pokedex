@@ -1,0 +1,94 @@
+{% extends "base.tpl.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainer Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-top: 0;
+        }
+        .profile-info {
+            margin-bottom: 20px;
+        }
+        .profile-info label {
+            font-weight: bold;
+        }
+        .btn {
+            display: inline-block;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Trainer Profile</h1>
+        <div class="profile-info">
+            <label>Trainer ID:</label>
+            <span>{{ trainer.id }}</span>
+        </div>
+        <div class="profile-info">
+            <label>Username:</label>
+            <span>{{ trainer.username }}</span>
+        </div>
+        <div class="profile-info">
+            <label>Pokemon numbers:</label>
+            <span>{{ trainer.pokemons }}</span>
+        </div>
+        {% if trainer.username == "admin" %}
+            <a href="/api/create" class="btn btn-primary">Create New Pokemon</a>
+        {% endif %}
+        <button id="add-new" class="btn btn-primary">Add New Pokemon</button>
+        <div id="pokemon-list" style="display: none;">
+            <h3>Select Pokemon:</h3>
+            <select id="pokemon-select">
+                {% for pokemon_id, pokemon_name in pokemon_list %}
+                  <option value="{{ pokemon_id }}">{{ pokemon_name }}</option>
+                {% endfor %}
+            </select>
+            <button id="add-pokemon" class="btn btn-success">Add Pokemon</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("add-new").addEventListener("click", function() {
+            document.getElementById("pokemon-list").style.display = "block";
+        });
+
+        document.getElementById("add-pokemon").addEventListener("click", async function() {
+            const selectedPokemonId = document.getElementById("pokemon-select").value;
+            try {
+                const response = await fetch(`/api/add_pokemon/${selectedPokemonId}`, {
+                    method: "POST"
+                });
+                if (!response.ok) {
+                    throw new Error("Failed to add Pokemon");
+                }
+                alert("Pokemon added successfully!");
+                window.location.reload();
+            } catch (error) {
+                console.error("Error adding Pokemon:", error);
+                alert("Failed to add Pokemon. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>
+{% endblock content %}
